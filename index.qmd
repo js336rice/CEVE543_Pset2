@@ -688,7 +688,7 @@ end
 
 ```
 
-Make the synthetic states 
+Plot Synthetic Emission Means 
 
 ```{julia}
 
@@ -765,6 +765,14 @@ end
 
 ```
 
+Plot synthetic states 
+
+
+```{julia}
+
+
+
+```
 
 
 
