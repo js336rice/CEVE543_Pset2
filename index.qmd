@@ -772,36 +772,39 @@ Plot synthetic states: need to modify this still
 
 
 let
-    # Load full anomaly array
-    ψ_array = Array(pca_data.ψ_anomaly)
-    nlons, nlats, ntimes = size(ψ_array)
+    ## Load full anomaly array
+    # ψ_array = Array(pca_data.ψ_anomaly)
+    # nlons, nlats, ntimes = size(ψ_array)
 
-    # Filter to NDJF seasons (matching HMM training data)
-    times = pca_data.coordinates.time
-    years = unique(year.(times))
-    ndjf_mask = falses(length(times))
+    #Load in grid 
+    nlons = length(pca_data.coordinates.lon)
+    nlats = length(pca_data.coordinates.lat)
 
-    for y in years
-        season_mask = ((year.(times) .== y) .& (month.(times) .>= 11)) .|
-                      ((year.(times) .== y + 1) .& (month.(times) .<= 2))
-        ndjf_mask .|= season_mask
+    #Synthetic spatial anomaly maps 
+    #Replace ψ_ndjf with this 
+    ψ_synth = zeros(nlons, nlats, length(random_states))
+
+    #Same loop as before 
+    for t in 1:length(random_states)
+        ψ_flat = MultivariateStats.reconstruct(pca_data.pca_model, random_pc[t])
+        ψ_synth[:, :, t] = reshape(ψ_flat, nlons, nlats)
     end
 
-    ψ_ndjf = ψ_array[:, :, ndjf_mask]
+    #Composties: 
+    synthetic_composites = zeros(nlons, nlats, n_states)
 
-    # Composite from actual days
-    composites = zeros(nlons, nlats, n_states)
-
+    #Same loop as in original code, but added in our data 
     for k in 1:n_states
-        cluster_days = findall(all_states .== k)
+        cluster_days = findall(random_states .== k)
         if length(cluster_days) > 0
-            cluster_data = ψ_ndjf[:, :, cluster_days]
-            composites[:, :, k] = mean(cluster_data, dims=3)[:, :, 1]
+            cluster_data = ψ_synth[:, :, cluster_days]
+            synthetic_composites[:, :, k] =
+                mean(cluster_data, dims=3)[:, :, 1]
         end
     end
 
     # Color range based on composites
-    crange = maximum(abs.(extrema(composites)))
+    crange = maximum(abs.(extrema(synthetic_composites)))
     crange = (-crange, crange)
 
     # Grid layout
@@ -816,9 +819,9 @@ let
         col = mod(k - 1, ncols) + 1
 
         ax = create_geoaxis(fig2, (row, col);
-            title="State $k: Composite (n=$(sum(all_states .== k)))")
+            title="State $k: Synthetic Composite (n=$(sum(all_states .== k)))")
         heatmap!(ax, pca_data.coordinates.lon, pca_data.coordinates.lat,
-            composites[:, :, k]; colormap=cmap_diverging, colorrange=crange)
+            synthetic_composites[:, :, k]; colormap=cmap_diverging, colorrange=crange)
         add_boundaries!(ax)
     end
 
@@ -874,6 +877,20 @@ Presumably this happens becasue in Lab 8, we were doing dimensionality reduction
 
 1. Write code to generate synthetic weather sequences from your fitted HMM using the `rand()` function. Create a 120-day sequence with corresponding PC values and spatial maps for a few days. Compare state frequencies, transition frequencies, and PC distributions between real and synthetic data.
 
+The state frequencies are certainly different for the synthetic data, but not in a pattern that's easy to name or take an obvious conclusion from with the naked eye.  
+
+The synthetic transition matrix is very similar, which is to be expected. 
+
+The states themselsves are similar, but their ranks are very different. 
+
 
 
 1. Describe how you would extend this to predict rainfall. What emission distribution would you use? How would you validate whether HMM states relate to rainfall patterns? What are the fundamental limitations for extreme rainfall?
+
+
+You would plug the prior history of weather into you HMM, and attempt to use it to preduct the most likely state of the next day.  If you wanted to do a multi-day forecast, you would add the forecasted day to your data, and then re-run the HMM to attempt to preduct the next day, and repeat as necassary for as far as you want your forecast to go. 
+
+To validate if HMM states relate to rainfall patterns, I'd look at what days the HMM groups into which patterns, and either visually inspect the data, or us some kind of error bounding algorithm, like MSE or something more suited to 2D data like this, like Digital Image Correlation, to quantify how similar the days grouped in to each state are to that state. 
+
+For extreme rainfall, there is a fundamental limitation in that it is, by definition, rare.  HMM's predict what is most likely to happen, not what will happen.  An HMM is not a tool suited to predicting unlikely events such as extreme rainfall. 
+
