@@ -632,6 +632,143 @@ end
 
 ```
 
+Make synthetic transition matrix, and plot to compare: 
+
+```{julia}
+
+
+function make_rand_transition_matrix(states, n_states)
+    counts = zeros(Float64, n_states, n_states)
+
+    for t in 1:(length(states)-1)
+        i = states[t]
+        j = states[t+1]
+        counts[i, j] += 1
+    end
+
+    # Convert to probabilities
+    probs = counts ./ sum(counts, dims=2)
+
+    return probs
+end
+
+synthetic_trans_matrix = make_rand_transition_matrix(random_states, n_states)
+
+
+
+let
+    
+
+    fig = Figure(size=(800, 700))
+    ax = Axis(fig[1, 1],
+        xlabel="To State",
+        ylabel="From State",
+        title="Synthetic Transition Probability Matrix",
+        xticks=1:n_states,
+        yticks=1:n_states,
+        aspect=DataAspect())
+
+    hm = heatmap!(ax, synthetic_trans_matrix, colormap=:Blues, colorrange=(0, 1))
+
+    # Add text annotations
+    for i in 1:n_states
+        for j in 1:n_states
+            text!(ax, i, j,
+                text=string(round(synthetic_trans_matrix[i, j], digits=2)),
+                align=(:center, :center),
+                color=:black,
+                fontsize=14)
+        end
+    end
+
+    Colorbar(fig[1, 2], hm, label="Probability")
+    fig
+end
+
+
+```
+
+Make the synthetic states 
+
+```{julia}
+
+let
+    # Load full anomaly array
+    ψ_array = Array(pca_data.ψ_anomaly)
+    nlons, nlats, ntimes = size(ψ_array)
+
+    # Method 1: Reconstruct from emission means (PC weights times EOF patterns)
+    obs_dists = obs_distributions(hmm_trained)
+    emission_maps = zeros(nlons, nlats, n_states)
+
+    for k in 1:n_states
+        μ = mean(obs_dists[k])  # Mean PC scores for this state
+        # Use MultivariateStats.reconstruct to properly inverse transform
+        ψ_reconstructed = MultivariateStats.reconstruct(pca_data.pca_model, μ)
+        emission_maps[:, :, k] = reshape(ψ_reconstructed, nlons, nlats)
+    end
+
+    # Method 2: Composite from synthetic days
+    # Replce ψ_ndjf with our synthetic data 
+    ψ_synth = zeros(nlons, nlats, length(random_states))
+
+    for t in 1:length(random_states)
+        ψ_flat = MultivariateStats.reconstruct(pca_data.pca_model, random_pc[t])
+        ψ_synth[:, :, t] = reshape(ψ_flat, nlons, nlats)
+    end
+
+    # Average by state
+    synthetic_composites = zeros(nlons, nlats, n_states)
+
+    for k in 1:n_states
+        idx = findall(random_states .== k)
+        if !isempty(idx)
+            synthetic_composites[:, :, k] =
+                mean(ψ_synth[:, :, idx], dims = 3)[:, :, 1]
+        end
+    end
+
+    # Determine color ranges separately
+    # Emission means are in PCA-reconstructed space
+    # Composites are in original anomaly space
+    crange_emission = maximum(abs.(extrema(emission_maps)))
+    crange_emission = (-crange_emission, crange_emission)
+
+
+    # What is this for???
+    # crange_synthetic = maximum(abs.(extrema(synthetic_composites)))
+    # crange_synthetic = (-crange_synthetic, crange_synthetic)
+
+    # Grid layout (3 columns, flexible rows)
+    ncols = 3
+    nrows = ceil(Int, n_states / ncols)
+
+    # Plot 1: Emission mean reconstructions
+    fig1 = Figure(size=(1200, 400 * nrows))
+
+    for k in 1:n_states
+        row = div(k - 1, ncols) + 1
+        col = mod(k - 1, ncols) + 1
+
+        ax = create_geoaxis(fig1, (row, col); title="State $k: Emission Mean")
+        heatmap!(ax, pca_data.coordinates.lon, pca_data.coordinates.lat,
+            emission_maps[:, :, k]; colormap=cmap_diverging, colorrange=crange_emission)
+        add_boundaries!(ax)
+    end
+
+    Colorbar(fig1[:, ncols+1], limits=crange_emission, colormap=cmap_diverging,
+        label=L"$\psi$ Anomaly ($10^6$ m$^2$/s)")
+
+    fig1
+end
+
+
+```
+
+
+
+
+
 
 ::: {.callout-note}
 ## Key Distinction
