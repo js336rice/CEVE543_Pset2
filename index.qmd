@@ -765,11 +765,68 @@ end
 
 ```
 
-Plot synthetic states 
+Plot synthetic states: need to modify this still 
 
 
 ```{julia}
 
+
+let
+    # Load full anomaly array
+    ψ_array = Array(pca_data.ψ_anomaly)
+    nlons, nlats, ntimes = size(ψ_array)
+
+    # Filter to NDJF seasons (matching HMM training data)
+    times = pca_data.coordinates.time
+    years = unique(year.(times))
+    ndjf_mask = falses(length(times))
+
+    for y in years
+        season_mask = ((year.(times) .== y) .& (month.(times) .>= 11)) .|
+                      ((year.(times) .== y + 1) .& (month.(times) .<= 2))
+        ndjf_mask .|= season_mask
+    end
+
+    ψ_ndjf = ψ_array[:, :, ndjf_mask]
+
+    # Composite from actual days
+    composites = zeros(nlons, nlats, n_states)
+
+    for k in 1:n_states
+        cluster_days = findall(all_states .== k)
+        if length(cluster_days) > 0
+            cluster_data = ψ_ndjf[:, :, cluster_days]
+            composites[:, :, k] = mean(cluster_data, dims=3)[:, :, 1]
+        end
+    end
+
+    # Color range based on composites
+    crange = maximum(abs.(extrema(composites)))
+    crange = (-crange, crange)
+
+    # Grid layout
+    ncols = 3
+    nrows = ceil(Int, n_states / ncols)
+
+    # Plot 2: Composites
+    fig2 = Figure(size=(1200, 400 * nrows))
+
+    for k in 1:n_states
+        row = div(k - 1, ncols) + 1
+        col = mod(k - 1, ncols) + 1
+
+        ax = create_geoaxis(fig2, (row, col);
+            title="State $k: Composite (n=$(sum(all_states .== k)))")
+        heatmap!(ax, pca_data.coordinates.lon, pca_data.coordinates.lat,
+            composites[:, :, k]; colormap=cmap_diverging, colorrange=crange)
+        add_boundaries!(ax)
+    end
+
+    Colorbar(fig2[:, ncols+1], limits=crange, colormap=cmap_diverging,
+        label=L"$\psi$ Anomaly ($10^6$ m$^2$/s)")
+
+    fig2
+end
 
 
 ```
