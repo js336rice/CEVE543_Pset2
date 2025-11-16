@@ -67,7 +67,7 @@ Begin with project management:
 using Pkg
 lab_dir = dirname(@__FILE__)
 Pkg.activate(lab_dir)
-# Pkg.instantiate() # uncomment this the first time you run the lab to install packages, then comment it back
+#Pkg.instantiate() # uncomment this the first time you run the lab to install packages, then comment it back
 ```
 
 Load all required packages:
@@ -314,7 +314,7 @@ More sophisticated initialization strategies exist (like using K-means cluster c
 
 ```{julia}
 #| output: false
-function initialize_hmm(n_states, n_dims; seed=42)
+function initialize_hmm(n_states, n_dims; seed=125)
     Random.seed!(seed)
 
     # Random initial state distribution (normalized)
@@ -334,6 +334,7 @@ end
 
 n_states = 6  # Following Doss-Gollin et al. (2018)
 n_pcs = size(pca_data.pc_scores, 2)
+#println(n_pcs)
 
 hmm_init = initialize_hmm(n_states, n_pcs)
 ```
@@ -603,6 +604,35 @@ let
 end
 ```
 
+
+Make a random data sequance for comparison:
+```{julia}
+random_states, random_pc = rand(hmm_trained, 120)
+```
+
+Compare state frequencies: 
+
+```{julia}
+let
+
+    n_days = length(random_states)
+
+    fig = Figure(size=(1200, 400))
+    ax = Axis(fig[1, 1],
+        xlabel="Day of Season",
+        ylabel="Weather State",
+        title="State Assignments for Synthetic Data",
+        yticks=1:n_states)
+
+    # Plot as step function
+    stairs!(ax, 1:n_days, random_states, color=:steelblue, linewidth=2)
+
+    fig
+end
+
+```
+
+
 ::: {.callout-note}
 ## Key Distinction
 
@@ -627,10 +657,21 @@ K-means cannot do this - it fundamentally ignores temporal order.
 
 1. Fit HMMs with 3, 4, 5, and 7 states. How does the transition matrix structure change? Is temporal persistence stronger with fewer or more states?
 
+The trend is not necessarily universal, as sometimes some states remain persistent even as we increase in the number of states.  In general however, persistence seems to get stronger with fewer states, or on average weaker with more states. 
+
+
 1. Run the same HMM configuration (6 states, 4 PCs) with 3 different random seeds. How different are the resulting state patterns and transition matrices?
+
+The changes in the transition matrix are not necessarily system-breaking, but they can still be significant.  The change in state patterns can be surprisingly radical.
 
 1. Compare results to the $K$-means clustering from lab 8. Where do they agree and disagree? Why?
 
+Some of the states captures in Lab 8 and Lab 9 are similar, but their ranks are very different, and some seeds in lab 9 seem to have more than one states that are "duplicates" of each other, or are very similar. 
+
+Presumably this happens becasue in Lab 8, we were doing dimensionality reduction, and "similar" states would be identified as the same dimension.  Also, in Lab 8 we're ranking our states by the variability they capture.
+
 1. Write code to generate synthetic weather sequences from your fitted HMM using the `rand()` function. Create a 120-day sequence with corresponding PC values and spatial maps for a few days. Compare state frequencies, transition frequencies, and PC distributions between real and synthetic data.
+
+
 
 1. Describe how you would extend this to predict rainfall. What emission distribution would you use? How would you validate whether HMM states relate to rainfall patterns? What are the fundamental limitations for extreme rainfall?
