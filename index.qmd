@@ -153,3 +153,12 @@ $c_1 V_k^T + \mu = x_{obs1}$
 We're transforming oru data into the PC space in order to cluster them, so the centroid of the cluster in PC space will be different from the centroid of that cluster in real data, as these are spaces with different dimensionalities and organizations.  When we only use $k = 4$ PC's instrad of all $p = 500$ dimensions, we are eliminating a tremendous amount of data.  This data is often noisy, and we can gain insights from looking at our data set without it, but it is still data we are losing. 
 
 
+### 3C 
+
+Option A is actually leveraging the information that we gained about trends by doing the PC analysis.  Option B is throwing a lot of that advantage out the window by still including what could be interpreted as noisy, background data, and taking us out of the PC space.  Option A is ther actual mean of Cluster 1, which is what we want, vs option B, which is the mean of the days that were assigned to cluster 1. 
+
+### Question 4 
+
+## 4A 
+
+
