@@ -36,33 +36,49 @@ code-line-numbers: false
 code-block-font-size: "0.85em"
 ---
 
-## Background and Reading
-
-This lab extends the weather typing analysis from Lab 8, replacing K-means clustering with Hidden Markov Models (HMMs).
-While K-means treats each day independently, HMMs explicitly model temporal dependencies between consecutive weather patterns.
-This is crucial for understanding weather persistence and transitions between regimes.
-
-### Hidden Markov Models
-
-An HMM consists of:
-
-- **Hidden states**: Unobserved weather regimes (what we want to identify)
-- **Observations**: PC scores we actually measure
-- **Emission distributions**: How each state generates observations (multivariate normal in PC space)
-- **Transition matrix**: Probabilities of switching between states from one day to the next
-- **Initial distribution**: Probability of starting in each state
-
-## Code Setup
-
-Begin with project management:
-
 ```{julia}
 #| output: false
 using Pkg
 lab_dir = dirname(@__FILE__)
 Pkg.activate(lab_dir)
-#Pkg.instantiate() # uncomment this the first time you run the lab to install packages, then comment it back
+Pkg.instantiate() # uncomment this the first time you run the lab to install packages, then comment it back
 ```
+
+
+
+
+
+## Question 1 
+
+### 1A
+
+```{julia}
+
+gcm_mean = 20
+gcm_std = 3
+
+obs_mean = 15
+obs_std = 2
+
+gcm_future_val = 26
+
+corrected_val = obs_mean + (gcm_future_val-gcm_mean)*(obs_std/gcm_std)
+
+println("The corrected value is: ", corrected_val)
+
+```
+
+### 1B
+
+
+This method corrects the bias within the mean of the GCM as it differs from that of the observations, but scales the bias within the standard deviation.
+
+### 1C
+
+
+
+
+
 
 Load all required packages:
 
