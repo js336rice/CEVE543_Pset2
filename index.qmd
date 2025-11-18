@@ -41,7 +41,7 @@ code-block-font-size: "0.85em"
 using Pkg
 lab_dir = dirname(@__FILE__)
 Pkg.activate(lab_dir)
-Pkg.instantiate() # uncomment this the first time you run the lab to install packages, then comment it back
+#Pkg.instantiate() # uncomment this the first time you run the lab to install packages, then comment it back
 ```
 
 
@@ -75,27 +75,21 @@ This method corrects the bias within the mean of the GCM as it differs from that
 
 ### 1C
 
+The linear scaling method corrects bias within the mean, but scales bias within the standard deviation.  The skew in the GCM data corresponds to a higher standard deviation than is correct, and linear scaling will not correct this, but will instead exacerbate it.
 
 
+![Figure for 1C: GCM Distribution, Observed Distribution, and Corrected Distribution](1C_Figure.png)
 
 
+### 1D
 
-Load all required packages:
+QQ-mapping fixes this problem because, since we are mapping through the quantiles, we're not really looking at the measurement's relation to the mean given the skew as much as we are it's probability of occurrence given whatever that mean and skew is, and then mapping it to a measurement of the same probability within the observed data.  So the skew and the mean don't really matter, their values aren't preserved in the results of our quantile function. 
 
-```{julia}
-using YAXArrays
-using NetCDF
-using CairoMakie
-using GeoMakie
-using MultivariateStats
-using Statistics
-using LaTeXStrings
-using DimensionalData
-using NaturalEarth
-using HiddenMarkovModels
-using Distributions
-using Random
-using Dates
-using LinearAlgebra: diag
-```
+The role of the quantile function is to map between values and their quantiles. 
+
+
+## Question 2
+
+
+### 2A
 
