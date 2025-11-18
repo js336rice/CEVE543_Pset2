@@ -135,3 +135,17 @@ The HMM models not the frequency of states, like the k-means model, but the freq
 ## Question 3
 
 ### 3A 
+
+The results of our PCA are: 
+
+$(X_{obs} - \mu)V_k = Z$
+
+Or, for one row of c_1: 
+
+$(x_{obs1} - \mu)V_k = c_1$
+
+So in order to obtain the desired image, do algebra to reverse this formula: 
+
+$c_1 V_k^T + \mu = x_{obs1}$
+
+
