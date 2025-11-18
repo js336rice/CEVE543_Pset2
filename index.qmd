@@ -157,8 +157,25 @@ We're transforming oru data into the PC space in order to cluster them, so the c
 
 Option A is actually leveraging the information that we gained about trends by doing the PC analysis.  Option B is throwing a lot of that advantage out the window by still including what could be interpreted as noisy, background data, and taking us out of the PC space.  Option A is ther actual mean of Cluster 1, which is what we want, vs option B, which is the mean of the days that were assigned to cluster 1. 
 
-### Question 4 
+## Question 4 
 
-## 4A 
+### 4A 
+
+
+AIC is Akaike Information Criterion, and BIC is Bayesian Information Criterion.  Both indicate better model performance as lower scores, so using AIC, you would select the complex model, and using BIC, you would select the simple model. 
+
+### 4B 
+
+AIC is: 
+
+$AIC = -2\ln(L) + 2k$
+
+Where L is the maximized likelihood function, and k is our number of parameters in the model.  For comparison, BIC is: 
+
+$BIC = -2\ln(L) + k\ln(n)$
+
+Where n is our number of observations in the data set.  Once n is 8 or larger, BIC will impose a larger penalty on having more parameters than AIC.  This is likely why AIC and BIC disagree in this case, because we have 8 or more observations, and BIC is penalizing the compelex model for having more parameters then the simple one. 
+
+
 
 
