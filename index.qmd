@@ -176,6 +176,13 @@ $BIC = -2\ln(L) + k\ln(n)$
 
 Where n is our number of observations in the data set.  Once n is 8 or larger, BIC will impose a larger penalty on having more parameters than AIC.  This is likely why AIC and BIC disagree in this case, because we have 8 or more observations, and BIC is penalizing the compelex model for having more parameters then the simple one. 
 
+### 4C 
 
+
+The "M-open" perspective is that none of the models are a true or perfect representaition of the data-generating process.  This assumption would lead us to believe that neither model is suitable to project climate change impact assesment 50 years into the future, especially with the added context that our models have been trained on data from the past, and likely have not been fitted to the unobserved trends of the future.  
+
+## Question 5
+
+### 5A 
 
 
