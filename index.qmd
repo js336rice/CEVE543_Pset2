@@ -93,3 +93,45 @@ The role of the quantile function is to map between values and their quantiles.
 
 ### 2A
 
+
+```{julia}
+
+p_wet = 0.3
+p_dry = 0.7
+
+p_3daywet = p_wet^3
+
+println("The probability of getting a 3-day wet spell is ", p_3daywet, " or ", p_3daywet*100,"%")
+```
+
+### 2B
+
+
+```{julia}
+
+
+p_dry2dry = 0.95
+p_dry2wet = 0.05
+
+p_wet2wet = 0.9
+p_wet2dry = 0.10
+
+p_markov_3daywet = p_wet*p_wet2wet*p_wet2wet
+
+
+p_markov_3daywet = round(p_markov_3daywet, digits=5)
+
+println("The probability of getting a 3-day wet spell with the markov model is ", p_markov_3daywet, " or ", p_markov_3daywet*100,"%")
+
+```
+
+
+### 2C 
+
+The HMM models not the frequency of states, like the k-means model, but the frequency at which one state will tranisition into another, or tranition to itself.  For this reason, the HMM is important for modeling persistence, because in weather, the most likely next state if often the same as or similar to what was just happening. 
+
+
+
+## Question 3
+
+### 3A 
