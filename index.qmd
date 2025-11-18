@@ -148,4 +148,8 @@ So in order to obtain the desired image, do algebra to reverse this formula:
 
 $c_1 V_k^T + \mu = x_{obs1}$
 
+### 3B
+
+We're transforming oru data into the PC space in order to cluster them, so the centroid of the cluster in PC space will be different from the centroid of that cluster in real data, as these are spaces with different dimensionalities and organizations.  When we only use $k = 4$ PC's instrad of all $p = 500$ dimensions, we are eliminating a tremendous amount of data.  This data is often noisy, and we can gain insights from looking at our data set without it, but it is still data we are losing. 
+
 
