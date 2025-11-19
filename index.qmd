@@ -185,4 +185,26 @@ The "M-open" perspective is that none of the models are a true or perfect repres
 
 ### 5A 
 
+Using Multiplicative Delta method: 
+
+```{julia}
+
+gcm_95 = 40
+gcm_50 = 10
+obs_95 = 50
+obs_50 = 12
+
+gcm_future_95 = 48
+gcm_future_50 = 11
+
+delta = obs_50/gcm_50 
+
+corrected_gcm_future_95 = gcm_future_95*delta
+corrected_gcm_future_50 = gcm_future_50*delta
+
+
+println("Corrected value for 95th percentile for the future is: ", corrected_gcm_future_95, " mm")
+println("Corrected value for 50th percentile for the future is: ", corrected_gcm_future_50, " mm")
+```
+
 
