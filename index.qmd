@@ -226,3 +226,20 @@ println("QDM corrected value for 50th percentile for the future is: ", q_correct
 
 ```
 
+
+### 5C
+
+QDM assumes a mapping within quantiles that the Delta Method doesn't.  For extreme precipitation, in the high percentiles, this can be very important, because this rainfall often behaves differently when compared to typical, or median precipitation.  
+
+## Question 6
+
+### 6A
+
+Vandal et al. (2017) assumes that geography/topography, as well as the method that DeepSD learns to map data from low resolution to high resolution, are stationary.  It allows for the climate itself to change, as long as it does not change in such a way that this mapping is no longer valid. 
+
+### 6B
+
+Weather regime frequencies and within-regime precipitation intensities both may change in a non-stationary climate.  Which of these changes, or if both change, and by how much, may have impacts for climate damage mitigation and our calculations of climate risk.  The physical understanding that motivates this approach is that how many storms there are does not neccessarily tell us how intense those storms are.  Or, put more broadly, the category of weather (rain, heat, cold, etc.) does not necessarily tell us how intense the weather is within that category. 
+
+
+### 6C
