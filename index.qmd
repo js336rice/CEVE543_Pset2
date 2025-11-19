@@ -208,3 +208,21 @@ println("Corrected value for 50th percentile for the future is: ", corrected_gcm
 ```
 
 
+### 5B
+
+Using Quantile Delta Mapping: 
+
+```{julia}
+
+delta_50 = obs_50/gcm_50 
+delta_95 = obs_95/gcm_95
+
+q_corrected_gcm_future_95 = gcm_future_95*delta_95
+q_corrected_gcm_future_50 = gcm_future_50*delta_50
+
+println("QDM corrected value for 95th percentile for the future is: ", q_corrected_gcm_future_95, " mm")
+println("QDM corrected value for 50th percentile for the future is: ", q_corrected_gcm_future_50, " mm")
+
+
+```
+
