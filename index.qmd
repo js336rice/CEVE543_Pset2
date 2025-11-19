@@ -243,3 +243,5 @@ Weather regime frequencies and within-regime precipitation intensities both may 
 
 
 ### 6C
+
+The deep learning approach has the advantage of being able to simulate a variety of climate scenarios.  As long as the assumption tahat the mapping learned by DeepSD does not need to be changed in a non-stationary climate holds, then we can project risk in a variety of different climate change scenarios.  One disadvantage is that neural networks often have difficulty extrapolating beyond training conditions, so if, as a result, our assumption does not hold, then we will make very poor risk assesments. 
